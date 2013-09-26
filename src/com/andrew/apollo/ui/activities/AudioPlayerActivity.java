@@ -12,7 +12,6 @@
 package com.andrew.apollo.ui.activities;
 
 import static com.andrew.apollo.utils.MusicUtils.mService;
-
 import android.animation.ObjectAnimator;
 import android.app.ActionBar;
 import android.app.SearchManager;
@@ -53,6 +52,7 @@ import com.andrew.apollo.MusicPlaybackService;
 import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.PagerAdapter;
 import com.andrew.apollo.cache.ImageFetcher;
+import com.andrew.apollo.cache.LyricsFetcher;
 import com.andrew.apollo.ui.fragments.QueueFragment;
 import com.andrew.apollo.menu.DeleteDialog;
 import com.andrew.apollo.utils.ApolloUtils;
@@ -113,6 +113,9 @@ public class AudioPlayerActivity extends FragmentActivity implements ServiceConn
 
     // Total time
     private TextView mTotalTime;
+    
+    // Song lyrics
+    private TextView mLyricsView;
 
     // Queue switch
     private ImageView mQueueSwitch;
@@ -140,6 +143,9 @@ public class AudioPlayerActivity extends FragmentActivity implements ServiceConn
 
     // Image cache
     private ImageFetcher mImageFetcher;
+    
+    // Lyrics cache
+    private LyricsFetcher mLyricsFetcher;
 
     // Theme resources
     private ThemeUtils mResources;
@@ -177,6 +183,9 @@ public class AudioPlayerActivity extends FragmentActivity implements ServiceConn
 
         // Initialize the image fetcher/cache
         mImageFetcher = ApolloUtils.getImageFetcher(this);
+        
+        // Initialize lyrics fetcher/cache
+        mLyricsFetcher = LyricsFetcher.getInstance(this);
 
         // Initialize the handler used to update the current time
         mTimeHandler = new TimeHandler(this);
@@ -520,6 +529,8 @@ public class AudioPlayerActivity extends FragmentActivity implements ServiceConn
         mQueueSwitch.setImageDrawable(mResources.getDrawable("btn_switch_queue"));
         // Progress
         mProgress = (SeekBar)findViewById(android.R.id.progress);
+        // Total time
+        mLyricsView = (TextView)findViewById(R.id.lyrics_text);
 
         // Set the repeat listner for the previous button
         mPreviousButton.setRepeatListener(mRewindListener);
@@ -543,6 +554,9 @@ public class AudioPlayerActivity extends FragmentActivity implements ServiceConn
         mImageFetcher.loadCurrentArtwork(mAlbumArt);
         // Set the small artwork
         mImageFetcher.loadCurrentArtwork(mAlbumArtSmall);
+
+        mLyricsFetcher.loadLyrics(MusicUtils.getFilePath(), mLyricsView);
+        
         // Update the current time
         queueNextRefresh(1);
 

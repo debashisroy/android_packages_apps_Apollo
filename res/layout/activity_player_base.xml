@@ -105,6 +105,20 @@
                 android:layout_centerHorizontal="true"
                 android:scaleType="fitXY" />
 
+            <com.andrew.apollo.widgets.SquaerScrollView
+                android:id="@+id/lyrics_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <TextView
+                    android:id="@+id/lyrics_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="#FFFFFF"
+                    android:visibility="visible" />
+            </com.andrew.apollo.widgets.SquaerScrollView>
+            
             <View
                 android:id="@+id/audio_player_footer_two"
                 android:layout_width="match_parent"
