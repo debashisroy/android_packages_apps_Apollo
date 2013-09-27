@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.audiofx.AudioEffect;
 import android.net.Uri;
@@ -33,10 +34,12 @@ import android.os.SystemClock;
 import android.provider.MediaStore.Audio.Playlists;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -45,7 +48,9 @@ import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextSwitcher;
 import android.widget.TextView;
+import android.widget.ViewSwitcher.ViewFactory;
 
 import com.andrew.apollo.IApolloService;
 import com.andrew.apollo.MusicPlaybackService;
@@ -115,7 +120,7 @@ public class AudioPlayerActivity extends FragmentActivity implements ServiceConn
     private TextView mTotalTime;
     
     // Song lyrics
-    private TextView mLyricsView;
+    private TextSwitcher mLyricsSwitcher;
 
     // Queue switch
     private ImageView mQueueSwitch;
@@ -183,9 +188,9 @@ public class AudioPlayerActivity extends FragmentActivity implements ServiceConn
 
         // Initialize the image fetcher/cache
         mImageFetcher = ApolloUtils.getImageFetcher(this);
-        
+
         // Initialize lyrics fetcher/cache
-        mLyricsFetcher = LyricsFetcher.getInstance(this);
+        mLyricsFetcher = ApolloUtils.getLyricsFetcher(this);
 
         // Initialize the handler used to update the current time
         mTimeHandler = new TimeHandler(this);
@@ -529,8 +534,26 @@ public class AudioPlayerActivity extends FragmentActivity implements ServiceConn
         mQueueSwitch.setImageDrawable(mResources.getDrawable("btn_switch_queue"));
         // Progress
         mProgress = (SeekBar)findViewById(android.R.id.progress);
-        // Total time
-        mLyricsView = (TextView)findViewById(R.id.lyrics_text);
+
+        // Song lyrics
+        mLyricsSwitcher = (TextSwitcher)findViewById(R.id.lyrics_switcher);
+
+        if (mLyricsSwitcher != null) {
+            mLyricsSwitcher.setFactory(new ViewFactory() {
+                @Override
+                public View makeView() {
+                    TextView textView = new TextView(AudioPlayerActivity.this);
+                    textView.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+                    // textView.setTextSize(36);
+                    textView.setTextColor(Color.argb(255, 255, 255, 255));
+                    return textView;
+                }
+            });
+            Animation in = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
+            Animation out = AnimationUtils.loadAnimation(this, android.R.anim.fade_out);
+            mLyricsSwitcher.setInAnimation(in);
+            mLyricsSwitcher.setOutAnimation(out);
+        }
 
         // Set the repeat listner for the previous button
         mPreviousButton.setRepeatListener(mRewindListener);
@@ -554,9 +577,8 @@ public class AudioPlayerActivity extends FragmentActivity implements ServiceConn
         mImageFetcher.loadCurrentArtwork(mAlbumArt);
         // Set the small artwork
         mImageFetcher.loadCurrentArtwork(mAlbumArtSmall);
-
-        mLyricsFetcher.loadLyrics(MusicUtils.getFilePath(), mLyricsView);
-        
+        // Set the song lyrics
+        mLyricsFetcher.loadCurrentLyrics(mLyricsSwitcher);
         // Update the current time
         queueNextRefresh(1);
 

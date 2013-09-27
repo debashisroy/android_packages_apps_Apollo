@@ -39,6 +39,7 @@ import com.andrew.apollo.Config;
 import com.andrew.apollo.R;
 import com.andrew.apollo.cache.ImageCache;
 import com.andrew.apollo.cache.ImageFetcher;
+import com.andrew.apollo.cache.LyricsFetcher;
 import com.andrew.apollo.ui.activities.ShortcutActivity;
 import com.andrew.apollo.widgets.ColorPickerView;
 import com.andrew.apollo.widgets.ColorSchemeDialog;
@@ -276,6 +277,16 @@ public final class ApolloUtils {
         final ImageFetcher imageFetcher = ImageFetcher.getInstance(activity);
         imageFetcher.setImageCache(ImageCache.findOrCreateCache(activity));
         return imageFetcher;
+    }
+
+    /**
+     * Creates a new instance of the {@link LyricsFetcher}
+     * 
+     * @param activity The {@link Activity} to use.
+     * @return A new {@link LyricsFetcher} used to fetch song lyrics asynchronously.
+     */
+    public static final LyricsFetcher getLyricsFetcher(final Activity activity) {
+        return LyricsFetcher.getInstance(activity);
     }
 
     /**

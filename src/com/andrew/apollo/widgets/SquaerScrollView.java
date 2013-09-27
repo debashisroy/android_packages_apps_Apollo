@@ -4,6 +4,12 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.ScrollView;
 
+/**
+ * A custom {@link ScrollView} that is sized to be a perfect square, otherwise
+ * functions like a typical {@link ScrollView}.
+ * 
+ * @author Debashis Roy (debashis.dr@gmail.com)
+ */
 public class SquaerScrollView extends ScrollView {
 
     public SquaerScrollView(Context context) {
