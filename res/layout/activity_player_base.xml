@@ -105,17 +105,10 @@
                 android:layout_centerHorizontal="true"
                 android:scaleType="fitXY" />
 
-            <com.andrew.apollo.widgets.SquaerScrollView
+            <com.andrew.apollo.lyrics.LyricsView
                 android:id="@+id/lyrics_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" >
-
-                <com.andrew.apollo.widgets.LyricsSwitcher
-                    android:id="@+id/lyrics_switcher"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"/>
-            </com.andrew.apollo.widgets.SquaerScrollView>
+                android:layout_height="match_parent" />
 
             <View
                 android:id="@+id/audio_player_footer_two"

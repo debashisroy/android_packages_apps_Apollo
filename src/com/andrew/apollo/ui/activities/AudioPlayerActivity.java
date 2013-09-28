@@ -12,6 +12,9 @@
 package com.andrew.apollo.ui.activities;
 
 import static com.andrew.apollo.utils.MusicUtils.mService;
+
+import java.lang.ref.WeakReference;
+
 import android.animation.ObjectAnimator;
 import android.app.ActionBar;
 import android.app.SearchManager;
@@ -22,7 +25,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.audiofx.AudioEffect;
 import android.net.Uri;
@@ -34,12 +36,10 @@ import android.os.SystemClock;
 import android.provider.MediaStore.Audio.Playlists;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -48,31 +48,27 @@ import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.widget.TextSwitcher;
 import android.widget.TextView;
-import android.widget.ViewSwitcher.ViewFactory;
 
 import com.andrew.apollo.IApolloService;
 import com.andrew.apollo.MusicPlaybackService;
 import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.PagerAdapter;
 import com.andrew.apollo.cache.ImageFetcher;
-import com.andrew.apollo.cache.LyricsFetcher;
-import com.andrew.apollo.ui.fragments.QueueFragment;
+import com.andrew.apollo.lyrics.LyricsController;
+import com.andrew.apollo.lyrics.LyricsView;
 import com.andrew.apollo.menu.DeleteDialog;
+import com.andrew.apollo.ui.fragments.QueueFragment;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
-import com.andrew.apollo.utils.PreferenceUtils;
 import com.andrew.apollo.utils.MusicUtils.ServiceToken;
 import com.andrew.apollo.utils.NavUtils;
+import com.andrew.apollo.utils.PreferenceUtils;
 import com.andrew.apollo.utils.ThemeUtils;
-import com.andrew.apollo.widgets.LyricsSwitcher;
 import com.andrew.apollo.widgets.PlayPauseButton;
 import com.andrew.apollo.widgets.RepeatButton;
 import com.andrew.apollo.widgets.RepeatingImageButton;
 import com.andrew.apollo.widgets.ShuffleButton;
-
-import java.lang.ref.WeakReference;
 
 /**
  * Apollo's "now playing" interface.
@@ -122,7 +118,7 @@ public class AudioPlayerActivity extends FragmentActivity implements ServiceConn
     private TextView mTotalTime;
     
     // Song lyrics
-    private LyricsSwitcher mLyricsSwitcher;
+    private LyricsView mLyricsView;
 
     // Queue switch
     private ImageView mQueueSwitch;
@@ -150,9 +146,11 @@ public class AudioPlayerActivity extends FragmentActivity implements ServiceConn
 
     // Image cache
     private ImageFetcher mImageFetcher;
-    
-    // Lyrics cache
-    private LyricsFetcher mLyricsFetcher;
+
+    // Lyrics controller
+    private LyricsController mLyricsController;
+
+    private PreferenceUtils mPreferences;
 
     // Theme resources
     private ThemeUtils mResources;
@@ -167,8 +165,6 @@ public class AudioPlayerActivity extends FragmentActivity implements ServiceConn
 
     private boolean mFromTouch = false;
 
-    private PreferenceUtils mPreferences;
-
     /**
      * {@inheritDoc}
      */
@@ -177,7 +173,10 @@ public class AudioPlayerActivity extends FragmentActivity implements ServiceConn
         super.onCreate(savedInstanceState);
 
         // Get the preferences
-        mPreferences = PreferenceUtils.getInstance(this);
+        mPreferences = PreferenceUtils.getInstance(this.getApplicationContext());
+
+        // Lyrics controller
+        mLyricsController = LyricsController.getInstance(this.getApplicationContext());
 
         // Initialze the theme resources
         mResources = new ThemeUtils(this);
@@ -195,9 +194,6 @@ public class AudioPlayerActivity extends FragmentActivity implements ServiceConn
 
         // Initialize the image fetcher/cache
         mImageFetcher = ApolloUtils.getImageFetcher(this);
-
-        // Initialize lyrics fetcher/cache
-        mLyricsFetcher = ApolloUtils.getLyricsFetcher(this);
 
         // Initialize the handler used to update the current time
         mTimeHandler = new TimeHandler(this);
@@ -542,7 +538,7 @@ public class AudioPlayerActivity extends FragmentActivity implements ServiceConn
         // Progress
         mProgress = (SeekBar)findViewById(android.R.id.progress);
         // Song lyrics
-        mLyricsSwitcher = (LyricsSwitcher)findViewById(R.id.lyrics_switcher);
+        mLyricsView = (LyricsView)findViewById(R.id.lyrics_view);
         // Set the repeat listner for the previous button
         mPreviousButton.setRepeatListener(mRewindListener);
         // Set the repeat listner for the next button
@@ -568,7 +564,7 @@ public class AudioPlayerActivity extends FragmentActivity implements ServiceConn
 
         // Set the song lyrics
         if (mPreferences.isSongLyricsEnable()) {
-            mLyricsFetcher.loadCurrentLyrics(mLyricsSwitcher);
+            mLyricsController.showCurrentLyrics(mLyricsView);
         }
 
         // Update the current time

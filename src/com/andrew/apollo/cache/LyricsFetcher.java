@@ -10,33 +10,20 @@ import org.jaudiotagger.tag.TagField;
 import org.jaudiotagger.tag.id3.AbstractID3v2Frame;
 import org.jaudiotagger.tag.lyrics3.Lyrics3v2Field;
 
-import android.animation.ArgbEvaluator;
-import android.animation.ValueAnimator;
-import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Pair;
-import android.widget.ScrollView;
-import android.widget.TextSwitcher;
 
-import com.andrew.apollo.utils.ApolloUtils;
+import com.andrew.apollo.lyrics.LyricsController;
 import com.andrew.apollo.utils.MusicUtils;
-import com.andrew.apollo.widgets.LyricsSwitcher;
 
 /**
  * Loads song lyrics to lyrics view. If lyrics exists in the lyrics cache then set it to lyrics
- * view, otherwise asynchronously load lyrics embedded in the audio file.
+ * view, otherwise asynchronously load lyrics embedded in the ID3 tag of audio file.
  * 
  * @author Debashis Roy (debashis.dr@gmail.com)
  */
 public class LyricsFetcher {
-
-    public static final int LYRICS_BG_TRANSLUCENT = Color.argb(150, 0, 0, 0);
-    public static final int LYRICS_BG_OPAQUE = Color.argb(0, 0, 0, 0);
-    public static final int NO_LYRICS_BG_COLOR = Color.argb(0, 0, 0, 0);
 
     private static LyricsFetcher sInstance;
     private Context mContext;
@@ -63,59 +50,42 @@ public class LyricsFetcher {
      * Loads song lyrics into lyrics view.
      * 
      * @param filePath The path of the audio file.
-     * @param lyricsSwitcher The lyrics view.
+     * @param lyricsView The lyrics view.
      */
-    public void loadCurrentLyrics(LyricsSwitcher lyricsSwitcher) {
-        if (lyricsSwitcher == null)
-            return;
-
+    public void loadCurrentLyrics(String filePath) {
         String lyrics = "";
-        String filePath = MusicUtils.getFilePath();
         if (filePath != null) {
             lyrics = mLyricsCache.get(filePath);
         }
 
         if (lyrics == null) {
-            updateLyricsView(lyricsSwitcher, null);
-            // ApolloUtils.execute(true, new
-            // EmbeddedLyricsLoader(lyricsSwitcher).execute(filePath));
-            new EmbeddedLyricsLoader(lyricsSwitcher).execute(filePath);
+            getLyricsController().setLyrics(null);
+            new EmbeddedLyricsLoader().execute(filePath);
         } else {
-            updateLyricsView(lyricsSwitcher, lyrics);
+            getLyricsController().setLyrics(lyrics);
         }
     }
 
     /**
-     * Update the lyrics view with new lyrics.
-     * 
-     * @param lyricsSwitcher The lyrics switcher.
-     * @param lyrics Song lyrics text.
+     * Returns the lyrics controller.
      */
-    private void updateLyricsView(final LyricsSwitcher lyricsSwitcher, String lyrics) {
-        if (lyricsSwitcher == null)
-            return;
-        
-        lyricsSwitcher.setText(lyrics);
+    private LyricsController getLyricsController() {
+        return LyricsController.getInstance(mContext);
+    }
 
-        if (lyrics != null) {
-            if (lyrics == null || lyrics.isEmpty()) {
-                lyricsSwitcher.animateSetBackgroundColor(NO_LYRICS_BG_COLOR);
-            } else {
-                lyricsSwitcher.animateSetBackgroundColor(LYRICS_BG_TRANSLUCENT);
-            }
-        }
+    /**
+     * Cleans up song lyrics. Removes unnecessary empty lines from the lyrics.
+     * @param lyrics The song lyrics.
+     * @return The song lyrics after cleanup.
+     */
+    private String normalizeLyrics(String lyrics) {
+        return (lyrics == null) ? null : lyrics.replaceAll("\n(\n)+", "\n\n").replaceAll("\r\n(\r\n)+", "\r\n\r\n");
     }
 
     /**
      * This class loads song lyrics from embedded ID3 tag and puts it in the lyrics cache.
      */
     private class EmbeddedLyricsLoader extends AsyncTask<String, Void, Pair<String, String>> {
-        private LyricsSwitcher mLyricsView;
-
-        public EmbeddedLyricsLoader(LyricsSwitcher lyricsView) {
-            mLyricsView = lyricsView;
-        }
-
         @Override
         protected Pair<String, String> doInBackground(String... params) {
             String filePath = params[0];
@@ -139,16 +109,12 @@ public class LyricsFetcher {
             mLyricsCache.put(filePath, (lyrics == null) ? "" : lyrics);
             return new Pair<String, String>(filePath, lyrics);
         }
-
+    
         @Override
         protected void onPostExecute(Pair<String, String> result) {
             if (result.first.equals(MusicUtils.getFilePath())) {
-                updateLyricsView(mLyricsView, result.second);
+                getLyricsController().setLyrics(result.second);
             }
         }
-    }
-
-    private String normalizeLyrics(String lyrics) {
-        return (lyrics == null) ? null : lyrics.replaceAll("\n(\n)+", "\n\n").replaceAll("\r\n(\r\n)+", "\r\n\r\n");
     }
 }
