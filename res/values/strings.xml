@@ -166,4 +166,10 @@
     <string name="empty_favorite">Songs you mark as favorites will be shown here.</string>
     <string name="empty_recent">Albums you have listened to will show up here. Try playing some music.</string>
 
+    <string name="settings_song_lyrics_category">Song Lyrics</string>
+    <string name="settings_song_lyrics_title">Show Lyrics</string>
+    <string name="settings_song_lyrics_summary">Display song lyrics on album cover</string>
+    <string name="settings_song_lyrics_album_cover_title">Show album cover</string>
+    <string name="settings_song_lyrics_album_cover_summary">Display album cover as lyrics background</string>
+
 </resources>

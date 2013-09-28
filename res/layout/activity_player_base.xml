@@ -110,13 +110,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" >
 
-                <TextSwitcher
+                <com.andrew.apollo.widgets.LyricsSwitcher
                     android:id="@+id/lyrics_switcher"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"/>
             </com.andrew.apollo.widgets.SquaerScrollView>
-            
+
             <View
                 android:id="@+id/audio_player_footer_two"
                 android:layout_width="match_parent"

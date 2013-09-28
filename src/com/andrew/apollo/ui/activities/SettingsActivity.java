@@ -20,6 +20,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
+import android.preference.PreferenceGroup;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
@@ -127,6 +128,8 @@ public class SettingsActivity extends PreferenceActivity {
         updateColorScheme();
         // Open the theme chooser
         openThemeChooser();
+        // Initialize lyrics preferences
+        initLyricsSettings();
     }
 
     /**
@@ -196,6 +199,26 @@ public class SettingsActivity extends PreferenceActivity {
             @Override
             public boolean onPreferenceClick(final Preference preference) {
                 ApolloUtils.createOpenSourceDialog(SettingsActivity.this).show();
+                return true;
+            }
+        });
+    }
+
+    private void initLyricsSettings() {
+        final Preference songLyrics = findPreference(PreferenceUtils.ENABLE_SONG_LYRICS);
+        songLyrics.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                mPreferences.setPreference(PreferenceUtils.ENABLE_SONG_LYRICS, ApolloUtils.toBoolean(newValue));
+                return true;
+            }
+        });
+
+        final Preference lyricsBgCover = findPreference(PreferenceUtils.SHOW_ALBUM_COVER_AS_LYRICS_BG);
+        lyricsBgCover.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                mPreferences.setPreference(PreferenceUtils.SHOW_ALBUM_COVER_AS_LYRICS_BG, ApolloUtils.toBoolean(newValue));
                 return true;
             }
         });

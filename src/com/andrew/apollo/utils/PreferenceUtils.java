@@ -13,6 +13,7 @@ package com.andrew.apollo.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 
@@ -77,6 +78,12 @@ public final class PreferenceUtils {
 
     // Key used to set the overall theme color
     public static final String DEFAULT_THEME_COLOR = "default_theme_color";
+
+    // Key used to enable/disable song lyrics
+    public static final String ENABLE_SONG_LYRICS = "enable_song_lyrics";
+
+    // Key used to enable/disable album cover as lyrics background
+    public static final String SHOW_ALBUM_COVER_AS_LYRICS_BG = "show_lyrics_bg_cover";
 
     private static PreferenceUtils sInstance;
 
@@ -383,4 +390,36 @@ public final class PreferenceUtils {
         return mPreferences.getString(which, defaultValue).equals(grid);
     }
 
+    /**
+     * Saves the preference.
+     * 
+     * @param key Which layout to change
+     * @param value The new layout type
+     */
+    public void setPreference(final String key, final boolean value) {
+        ApolloUtils.execute(false, new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(final Void... unused) {
+                final SharedPreferences.Editor editor = mPreferences.edit();
+                editor.putBoolean(key, value);
+                editor.apply();
+
+                return null;
+            }
+        }, (Void[]) null);
+    }
+
+    public boolean isSongLyricsEnable() {
+        return mPreferences.getBoolean(ENABLE_SONG_LYRICS, true);
+    }
+
+    public boolean isShowCoverAsLyricsBackground() {
+        mPreferences.registerOnSharedPreferenceChangeListener(null);
+        return mPreferences.getBoolean(SHOW_ALBUM_COVER_AS_LYRICS_BG, true);
+    }
+    
+    public void registerOnSharedPreferenceChangeListener(OnSharedPreferenceChangeListener listener)
+    {
+        mPreferences.registerOnSharedPreferenceChangeListener(listener);
+    }
 }

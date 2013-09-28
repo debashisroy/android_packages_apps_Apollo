@@ -35,13 +35,16 @@ public class ThemeableFrameLayout extends FrameLayout {
      * @param context The {@link Context} to use
      * @param attrs The attributes of the XML tag that is inflating the view.
      */
-    @SuppressWarnings("deprecation")
     public ThemeableFrameLayout(final Context context, final AttributeSet attrs) {
         super(context, attrs);
-        // Initialze the theme resources
-        final ThemeUtils resources = new ThemeUtils(context);
-        // Theme the layout
-        setBackgroundDrawable(resources.getDrawable(BACKGROUND));
+        
+        if(!isInEditMode())
+        {
+            // Initialze the theme resources
+            final ThemeUtils resources = new ThemeUtils(context);
+            // Theme the layout
+            setBackground(resources.getDrawable(BACKGROUND));
+        }
     }
 
 }

@@ -22,7 +22,9 @@ import android.util.Pair;
 import android.widget.ScrollView;
 import android.widget.TextSwitcher;
 
+import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
+import com.andrew.apollo.widgets.LyricsSwitcher;
 
 /**
  * Loads song lyrics to lyrics view. If lyrics exists in the lyrics cache then set it to lyrics
@@ -32,7 +34,8 @@ import com.andrew.apollo.utils.MusicUtils;
  */
 public class LyricsFetcher {
 
-    public static final int LYRICS_BG_COLOR = Color.argb(150, 0, 0, 0);
+    public static final int LYRICS_BG_TRANSLUCENT = Color.argb(150, 0, 0, 0);
+    public static final int LYRICS_BG_OPAQUE = Color.argb(0, 0, 0, 0);
     public static final int NO_LYRICS_BG_COLOR = Color.argb(0, 0, 0, 0);
 
     private static LyricsFetcher sInstance;
@@ -62,7 +65,7 @@ public class LyricsFetcher {
      * @param filePath The path of the audio file.
      * @param lyricsSwitcher The lyrics view.
      */
-    public void loadCurrentLyrics(TextSwitcher lyricsSwitcher) {
+    public void loadCurrentLyrics(LyricsSwitcher lyricsSwitcher) {
         if (lyricsSwitcher == null)
             return;
 
@@ -74,6 +77,8 @@ public class LyricsFetcher {
 
         if (lyrics == null) {
             updateLyricsView(lyricsSwitcher, null);
+            // ApolloUtils.execute(true, new
+            // EmbeddedLyricsLoader(lyricsSwitcher).execute(filePath));
             new EmbeddedLyricsLoader(lyricsSwitcher).execute(filePath);
         } else {
             updateLyricsView(lyricsSwitcher, lyrics);
@@ -86,57 +91,28 @@ public class LyricsFetcher {
      * @param lyricsSwitcher The lyrics switcher.
      * @param lyrics Song lyrics text.
      */
-    private void updateLyricsView(final TextSwitcher lyricsSwitcher, String lyrics) {
+    private void updateLyricsView(final LyricsSwitcher lyricsSwitcher, String lyrics) {
         if (lyricsSwitcher == null)
             return;
-
+        
         lyricsSwitcher.setText(lyrics);
 
         if (lyrics != null) {
             if (lyrics == null || lyrics.isEmpty()) {
-                updateBackgroundColor(lyricsSwitcher, NO_LYRICS_BG_COLOR);
+                lyricsSwitcher.animateSetBackgroundColor(NO_LYRICS_BG_COLOR);
             } else {
-                ((ScrollView) lyricsSwitcher.getParent()).scrollTo(0, 0);
-                updateBackgroundColor(lyricsSwitcher, LYRICS_BG_COLOR);
+                lyricsSwitcher.animateSetBackgroundColor(LYRICS_BG_TRANSLUCENT);
             }
         }
-    }
-
-    /**
-     * Animate background color transition of song lyrics.
-     * 
-     * @param lyricsSwitcher The lyrics switcher.
-     * @param bgColor Background color.
-     */
-    private void updateBackgroundColor(final TextSwitcher lyricsSwitcher, Integer bgColor) {
-        if (lyricsSwitcher == null) {
-            return;
-        }
-        Drawable background = lyricsSwitcher.getBackground();
-        Integer colorFrom = 0;
-        if (background instanceof ColorDrawable) {
-            colorFrom = ((ColorDrawable) background).getColor();
-        }
-        if (colorFrom.equals(bgColor)) {
-            return;
-        }
-        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, bgColor);
-        colorAnimation.addUpdateListener(new AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animator) {
-                lyricsSwitcher.setBackgroundColor((Integer) animator.getAnimatedValue());
-            }
-        });
-        colorAnimation.start();
     }
 
     /**
      * This class loads song lyrics from embedded ID3 tag and puts it in the lyrics cache.
      */
     private class EmbeddedLyricsLoader extends AsyncTask<String, Void, Pair<String, String>> {
-        private TextSwitcher mLyricsView;
+        private LyricsSwitcher mLyricsView;
 
-        public EmbeddedLyricsLoader(TextSwitcher lyricsView) {
+        public EmbeddedLyricsLoader(LyricsSwitcher lyricsView) {
             mLyricsView = lyricsView;
         }
 
@@ -159,6 +135,7 @@ public class LyricsFetcher {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            lyrics = normalizeLyrics(lyrics);
             mLyricsCache.put(filePath, (lyrics == null) ? "" : lyrics);
             return new Pair<String, String>(filePath, lyrics);
         }
@@ -169,5 +146,9 @@ public class LyricsFetcher {
                 updateLyricsView(mLyricsView, result.second);
             }
         }
+    }
+
+    private String normalizeLyrics(String lyrics) {
+        return (lyrics == null) ? null : lyrics.replaceAll("\n(\n)+", "\n\n").replaceAll("\r\n(\r\n)+", "\r\n\r\n");
     }
 }

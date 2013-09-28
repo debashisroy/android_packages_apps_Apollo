@@ -381,4 +381,20 @@ public final class ApolloUtils {
             v.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         }
    }
+
+    public static boolean toBoolean(Object object) {
+        if (object instanceof String) {
+            return Boolean.parseBoolean((String) object);
+        }
+        if (object instanceof Boolean) {
+            return ((Boolean) object).booleanValue();
+        }
+        return false;
+    }
+
+    public static int setColorAlpha(int color, int alpha) {
+        color &= 0x00ffffff;
+        color |= (alpha << 24);
+        return color;
+    }
 }

@@ -62,9 +62,11 @@ import com.andrew.apollo.ui.fragments.QueueFragment;
 import com.andrew.apollo.menu.DeleteDialog;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
+import com.andrew.apollo.utils.PreferenceUtils;
 import com.andrew.apollo.utils.MusicUtils.ServiceToken;
 import com.andrew.apollo.utils.NavUtils;
 import com.andrew.apollo.utils.ThemeUtils;
+import com.andrew.apollo.widgets.LyricsSwitcher;
 import com.andrew.apollo.widgets.PlayPauseButton;
 import com.andrew.apollo.widgets.RepeatButton;
 import com.andrew.apollo.widgets.RepeatingImageButton;
@@ -120,7 +122,7 @@ public class AudioPlayerActivity extends FragmentActivity implements ServiceConn
     private TextView mTotalTime;
     
     // Song lyrics
-    private TextSwitcher mLyricsSwitcher;
+    private LyricsSwitcher mLyricsSwitcher;
 
     // Queue switch
     private ImageView mQueueSwitch;
@@ -165,12 +167,17 @@ public class AudioPlayerActivity extends FragmentActivity implements ServiceConn
 
     private boolean mFromTouch = false;
 
+    private PreferenceUtils mPreferences;
+
     /**
      * {@inheritDoc}
      */
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Get the preferences
+        mPreferences = PreferenceUtils.getInstance(this);
 
         // Initialze the theme resources
         mResources = new ThemeUtils(this);
@@ -534,27 +541,8 @@ public class AudioPlayerActivity extends FragmentActivity implements ServiceConn
         mQueueSwitch.setImageDrawable(mResources.getDrawable("btn_switch_queue"));
         // Progress
         mProgress = (SeekBar)findViewById(android.R.id.progress);
-
         // Song lyrics
-        mLyricsSwitcher = (TextSwitcher)findViewById(R.id.lyrics_switcher);
-
-        if (mLyricsSwitcher != null) {
-            mLyricsSwitcher.setFactory(new ViewFactory() {
-                @Override
-                public View makeView() {
-                    TextView textView = new TextView(AudioPlayerActivity.this);
-                    textView.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
-                    // textView.setTextSize(36);
-                    textView.setTextColor(Color.argb(255, 255, 255, 255));
-                    return textView;
-                }
-            });
-            Animation in = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
-            Animation out = AnimationUtils.loadAnimation(this, android.R.anim.fade_out);
-            mLyricsSwitcher.setInAnimation(in);
-            mLyricsSwitcher.setOutAnimation(out);
-        }
-
+        mLyricsSwitcher = (LyricsSwitcher)findViewById(R.id.lyrics_switcher);
         // Set the repeat listner for the previous button
         mPreviousButton.setRepeatListener(mRewindListener);
         // Set the repeat listner for the next button
@@ -573,12 +561,16 @@ public class AudioPlayerActivity extends FragmentActivity implements ServiceConn
         mArtistName.setText(MusicUtils.getArtistName());
         // Set the total time
         mTotalTime.setText(MusicUtils.makeTimeString(this, MusicUtils.duration() / 1000));
-        // Set the album art
-        mImageFetcher.loadCurrentArtwork(mAlbumArt);
         // Set the small artwork
         mImageFetcher.loadCurrentArtwork(mAlbumArtSmall);
+        // Set the album art
+        mImageFetcher.loadCurrentArtwork(mAlbumArt);
+
         // Set the song lyrics
-        mLyricsFetcher.loadCurrentLyrics(mLyricsSwitcher);
+        if (mPreferences.isSongLyricsEnable()) {
+            mLyricsFetcher.loadCurrentLyrics(mLyricsSwitcher);
+        }
+
         // Update the current time
         queueNextRefresh(1);
 
