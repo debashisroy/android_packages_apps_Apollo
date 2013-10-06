@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.andrew.apollo"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_centerVertical="true"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/liLyricsSummary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="5dip"
+        android:paddingLeft="5dip"
+        android:paddingRight="0dip"
+        android:paddingTop="5dip" >
+
+        <LinearLayout
+            android:id="@+id/thumbnail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginRight="5dip"
+            android:padding="3dip" >
+
+            <ImageView
+                android:id="@+id/liIcon"
+                android:layout_width="50dip"
+                android:layout_height="50dip"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/logo_lyrics_n_music" />
+        </LinearLayout>
+
+        <!-- Rightend Arrow -->
+
+        <ImageView
+            android:id="@+id/liArrow"
+            android:layout_width="50dip"
+            android:layout_height="50dip"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/white_arrow_down" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/liArrow"
+            android:layout_toRightOf="@+id/thumbnail"
+            android:orientation="vertical" >
+
+            <com.andrew.apollo.widgets.theme.ThemeableTextView
+                android:id="@+id/liTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textSize="@dimen/text_size_medium"
+                android:textStyle="bold"
+                app:themeResource="audio_player_line_one" />
+
+            <com.andrew.apollo.widgets.theme.ThemeableTextView
+                android:id="@+id/liArtist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textSize="@dimen/text_size_medium"
+                app:themeResource="audio_player_line_two" />
+
+            <com.andrew.apollo.widgets.theme.ThemeableTextView
+                android:id="@+id/liAlbum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textSize="@dimen/text_size_medium"
+                android:visibility="gone"
+                app:themeResource="audio_player_line_two" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/liLyrics"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/liLyricsSummary"
+        android:orientation="vertical"
+        android:padding="10dip"
+        android:visibility="gone" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/list_item_background"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/liLyricsHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10dp"
+                android:text="@string/lyrics_reult_list_item_title"
+                android:textSize="@dimen/text_size_medium"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/liLyricsSnippet"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="5dp"
+                android:textSize="@dimen/text_size_small" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

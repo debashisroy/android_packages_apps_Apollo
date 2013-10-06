@@ -15,6 +15,7 @@ import android.os.AsyncTask;
 import android.util.Pair;
 
 import com.andrew.apollo.lyrics.LyricsController;
+import com.andrew.apollo.lyrics.search.LyricsUtils;
 import com.andrew.apollo.utils.MusicUtils;
 
 /**
@@ -27,7 +28,6 @@ public class LyricsFetcher {
 
     private static LyricsFetcher sInstance;
     private Context mContext;
-    private LruCache<String, String> mLyricsCache = new LruCache<String, String>(100);
 
     protected LyricsFetcher(final Context context) {
         mContext = context;
@@ -55,7 +55,7 @@ public class LyricsFetcher {
     public void loadCurrentLyrics(String filePath) {
         String lyrics = "";
         if (filePath != null) {
-            lyrics = mLyricsCache.get(filePath);
+            lyrics = getLyricsController().getLyricsCache().get(filePath);
         }
 
         if (lyrics == null) {
@@ -75,6 +75,7 @@ public class LyricsFetcher {
 
     /**
      * Cleans up song lyrics. Removes unnecessary empty lines from the lyrics.
+     * 
      * @param lyrics The song lyrics.
      * @return The song lyrics after cleanup.
      */
@@ -89,7 +90,13 @@ public class LyricsFetcher {
         @Override
         protected Pair<String, String> doInBackground(String... params) {
             String filePath = params[0];
-            String lyrics = null;
+
+            String lyrics = LyricsUtils.readLyricsFromFile(filePath);
+
+            if (lyrics != null) {
+                return new Pair<String, String>(filePath, lyrics);
+            }
+
             try {
                 File sourceFile = new File(filePath);
                 AudioFile f = null;
@@ -106,10 +113,10 @@ public class LyricsFetcher {
                 e.printStackTrace();
             }
             lyrics = normalizeLyrics(lyrics);
-            mLyricsCache.put(filePath, (lyrics == null) ? "" : lyrics);
+            getLyricsController().getLyricsCache().put(filePath, (lyrics == null) ? "" : lyrics);
             return new Pair<String, String>(filePath, lyrics);
         }
-    
+
         @Override
         protected void onPostExecute(Pair<String, String> result) {
             if (result.first.equals(MusicUtils.getFilePath())) {

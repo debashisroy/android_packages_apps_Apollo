@@ -11,8 +11,7 @@
      distributed under the License is distributed on an "AS IS" BASIS,
      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
      See the License for the specific language governing permissions and
-     limitations under the License.
- -->
+     limitations under the License. -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <string name="app_name">Apollo</string>
@@ -165,11 +164,8 @@
     <string name="empty_search">No search results found</string>
     <string name="empty_favorite">Songs you mark as favorites will be shown here.</string>
     <string name="empty_recent">Albums you have listened to will show up here. Try playing some music.</string>
-
-    <string name="settings_song_lyrics_category">Song Lyrics</string>
-    <string name="settings_song_lyrics_title">Show Lyrics</string>
-    <string name="settings_song_lyrics_summary">Display song lyrics on album cover</string>
-    <string name="settings_song_lyrics_album_cover_title">Show album cover</string>
-    <string name="settings_song_lyrics_album_cover_summary">Display album cover as lyrics background</string>
+    <string name="title_activity_lyrics_search">Serach Lyrics</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 
 </resources>

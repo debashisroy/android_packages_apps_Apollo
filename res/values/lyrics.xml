@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="settings_song_lyrics_category">Lyrics</string>
+    <string name="settings_song_lyrics_title">Show Lyrics</string>
+    <string name="settings_song_lyrics_summary">Display song lyrics on album cover</string>
+    <string name="settings_song_lyrics_album_cover_title">Show album cover</string>
+    <string name="settings_song_lyrics_album_cover_summary">Display album cover as lyrics background</string>
+
+    <string name="context_menu_search_lyrics_title">Search Lyrics</string>
+    <string name="context_menu_search_lyrics_message">Search lyrics on internet</string>
+    
+    <string name="lyrics_search_dialog_title">Loading</string>
+    <string name="lyrics_search_dialog_message">Searching lyrics...</string>
+    
+    <string name="lyrics_fetch_dialog_title">Loading</string>
+    <string name="lyrics_fetch_dialog_message">Downloading lyrics...</string>
+
+    <string name="lyrics_reult_list_item_title">Lyrics</string>
+</resources>

@@ -17,6 +17,7 @@ import java.lang.ref.WeakReference;
 
 import android.animation.ObjectAnimator;
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.BroadcastReceiver;
@@ -538,13 +539,18 @@ public class AudioPlayerActivity extends FragmentActivity implements ServiceConn
         // Progress
         mProgress = (SeekBar)findViewById(android.R.id.progress);
         // Song lyrics
-        mLyricsView = (LyricsView)findViewById(R.id.lyrics_view);
+        mLyricsView = (LyricsView) findViewById(R.id.lyrics_view);
+//        if (mLyricsView != null) {
+//            registerForContextMenu(mLyricsView);
+//        }
         // Set the repeat listner for the previous button
         mPreviousButton.setRepeatListener(mRewindListener);
         // Set the repeat listner for the next button
         mNextButton.setRepeatListener(mFastForwardListener);
         // Update the progress
         mProgress.setOnSeekBarChangeListener(this);
+        
+        mLyricsController.setCurrentActivity(this);
     }
 
     /**
@@ -964,6 +970,12 @@ public class AudioPlayerActivity extends FragmentActivity implements ServiceConn
                 mReference.get().mShuffleButton.updateShuffleState();
             }
         }
+    }
+
+    @Override
+    protected void onActivityResult(int arg0, int arg1, Intent arg2) {
+        // TODO Auto-generated method stub
+        super.onActivityResult(arg0, arg1, arg2);
     }
 
 }

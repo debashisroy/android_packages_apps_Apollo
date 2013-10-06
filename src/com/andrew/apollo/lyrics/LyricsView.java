@@ -1,11 +1,11 @@
 package com.andrew.apollo.lyrics;
 
-import com.andrew.apollo.widgets.SquaerScrollView;
-
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -18,12 +18,15 @@ import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.ViewSwitcher.ViewFactory;
 
+import com.andrew.apollo.R;
+import com.andrew.apollo.widgets.SquaerScrollView;
+
 /**
  * The view used to display song lyrics.
  * 
  * @author Debashis Roy (debashis.dr@gmail.com)
  */
-public class LyricsView extends SquaerScrollView implements ViewFactory {
+public class LyricsView extends SquaerScrollView implements ViewFactory, View.OnLongClickListener {
 
     protected static final int TEXT_COLOR = Color.argb(255, 255, 255, 255);
     protected static final int TEXT_SIZE = 12;
@@ -60,6 +63,11 @@ public class LyricsView extends SquaerScrollView implements ViewFactory {
         mLyricsSwitcher.setOutAnimation(out);
 
         addView(mLyricsSwitcher);
+
+        setFillViewport(true);
+
+        setOnLongClickListener(this);
+        mLyricsSwitcher.setOnLongClickListener(this);
     }
 
     /**
@@ -111,6 +119,30 @@ public class LyricsView extends SquaerScrollView implements ViewFactory {
      * @param lyrics The song lyrics.
      */
     public void setLyrics(String lyrics) {
+        setVerticalScrollBarEnabled(lyrics != null && !lyrics.isEmpty());
         mLyricsSwitcher.setText(lyrics);
+        scrollTo(0, 0);
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(R.string.context_menu_search_lyrics_title);
+        builder.setMessage(R.string.context_menu_search_lyrics_message);
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                getController().searchLyricsClicked();
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+            }
+        });
+        builder.create().show();
+        return true;
+    }
+
+    public LyricsController getController() {
+        return LyricsController.getInstance(getContext());
     }
 }

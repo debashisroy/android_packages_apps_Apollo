@@ -51,18 +51,15 @@
         
         
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/accessibility_next" android:orderingFromXml="true">
+    <PreferenceCategory android:title="@string/settings_song_lyrics_category">
        <SwitchPreference 
            android:key="enable_song_lyrics"
            android:title="@string/settings_song_lyrics_title" 
            android:summary="@string/settings_song_lyrics_summary" 
            android:defaultValue="true" 
            android:enabled="true" android:selectable="false"/>
-       <CheckBoxPreference 
-           android:key="show_lyrics_bg_cover" 
-           android:title="@string/settings_song_lyrics_album_cover_title" 
-           android:summary="@string/settings_song_lyrics_album_cover_summary"
-           android:defaultValue="true" android:dependency="enable_song_lyrics"/>
+       
+       <CheckBoxPreference android:key="show_lyrics_bg_cover" android:title="@string/settings_song_lyrics_album_cover_title" android:summary="@string/settings_song_lyrics_album_cover_summary" android:defaultValue="true" android:dependency="enable_song_lyrics" />
 </PreferenceCategory>
     <!-- Storage catetory -->
     <PreferenceCategory android:title="@string/settings_storage_category" >
